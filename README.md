@@ -35,4 +35,4 @@ amos3 is distributed under the standard OSI MIT License (Expat) as documented in
 ## Releases
 | Release | Date | Description |
 | --- | --- | --- |
-| 0.1.0 | 2018-06-27 | initial public release |
+| [0.1.0](https://github.com/mjbommar/amos3/tree/0.1.0) | 2018-06-27 | initial public release |
