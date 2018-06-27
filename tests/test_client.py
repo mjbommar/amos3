@@ -5,7 +5,7 @@ import datetime
 import os
 
 # Packages
-from nose.tools import assert_equal, assert_greater, assert_true
+from nose.tools import assert_equal, assert_greater, assert_true, raises
 
 # Project imports
 from client import get_image_by_camera_timestamp, get_timestamps_by_camera_month, timestamp_to_datetime, \
@@ -32,6 +32,16 @@ def test_get_image_by_camera_timestamp():
     assert_equal(len(image_buffer), 137897)
 
 
+@raises(ValueError)
+def test_get_image_by_camera_timestamp_bad():
+    """
+    Test get_image_by_camera_timestamp with invalid ID.
+    :return:
+    """
+    # Test single image size and type
+    _ = get_image_by_camera_timestamp(0, "ABC123")
+
+
 def test_get_timestamps_by_camera_month():
     """
     Test get_timestamps_by_camera_month basic case.
@@ -40,6 +50,10 @@ def test_get_timestamps_by_camera_month():
     # Check number of timestamps for year/month
     l = get_timestamps_by_camera_month(65, 2016, 1)
     assert_equal(len(l), 1367)
+
+    # Check number of timestamps for year/month
+    l = get_timestamps_by_camera_month(65, 2018, 1)
+    assert_equal(len(l), 0)
 
 
 def test_get_camera_list():
@@ -64,6 +78,16 @@ def test_get_camera_info():
     assert_equal(ci["id"], 21804)
     assert_equal(type(ci["latitude"]), float)
     assert_equal(type(ci["date_added"]), datetime.datetime)
+
+
+@raises(ValueError)
+def test_get_camera_info_bad():
+    """
+    Test get_camera_info with bad camera ID.
+    :return:
+    """
+    ci = get_camera_info(999999)
+    assert_equal(type(ci), dict)
 
 
 def test_save_camera_zip():

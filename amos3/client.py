@@ -114,7 +114,11 @@ def get_camera_info(camera_id):
     camera_info = {}
 
     # Parse from XML to dict
-    info_xml_doc = lxml.etree.fromstring(info_buffer)
+    try:
+        info_xml_doc = lxml.etree.fromstring(info_buffer)
+    except lxml.etree.XMLSyntaxError as e:
+        raise ValueError("Invalid camera ID specified or XML response otherwise malformed.")
+
     camera_element = info_xml_doc.xpath(".//webcam").pop()
     for info_element in list(camera_element):
         if info_element.tag not in INFO_TYPE_MAP:
@@ -146,7 +150,11 @@ def get_image_by_camera_timestamp(camera_id, timestamp_string):
     """
     # Create image URL and retrieve
     image_url = urllib.parse.urljoin(BASE_URL, "image/{0}/{1}.jpg".format(camera_id, timestamp_string))
-    return get_buffer(image_url)
+    image_buffer = get_buffer(image_url)
+    if b"<!DOCTYPE html>" in image_buffer:
+        raise ValueError("Invalid camera ID or timestamp string provided or image otherwise unavailable.")
+    else:
+        return image_buffer
 
 
 def get_timestamps_by_camera_month(camera_id, year, month):
