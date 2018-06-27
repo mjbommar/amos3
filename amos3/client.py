@@ -1,3 +1,5 @@
+"""The amos3.client module provides a direct interface to query AMOS endpoints and retrieve AMOS ZIP data."""
+
 # Imports
 import datetime
 import urllib.parse
@@ -206,3 +208,4 @@ def save_camera_zip(camera_id, year, month, file_path=None):
 
     # Download
     save_buffer(zip_url, file_path)
+    return True

@@ -5,4 +5,4 @@ max-line-length=120
 notes=FIXME,TODO
 
 [MESSAGES CONTROL]
-disable=r
+disable=r,c

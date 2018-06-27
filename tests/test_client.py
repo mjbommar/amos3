@@ -1,3 +1,5 @@
+"""The module provides unit test coverage for amos3.client module."""
+
 # Imports
 import datetime
 import os
@@ -15,8 +17,8 @@ def test_timestamp_to_datetime():
     Test timestamp_to_datetime basic case.
     :return:
     """
-    d = timestamp_to_datetime("20160101_000356")
-    assert_equal(d, datetime.datetime(2016, 1, 1, 0, 3, 56, tzinfo=datetime.timezone.utc))
+    new_date = timestamp_to_datetime("20160101_000356")
+    assert_equal(new_date, datetime.datetime(2016, 1, 1, 0, 3, 56, tzinfo=datetime.timezone.utc))
 
 
 def test_get_image_by_camera_timestamp():
@@ -70,5 +72,6 @@ def test_save_camera_zip():
     :return:
     """
     # Download and check path exists
-    c = save_camera_zip(21804, 2002, 2)
+    status = save_camera_zip(21804, 2002, 2)
+    assert_true(status)
     assert_true(os.path.exists("2002.02.zip"))
