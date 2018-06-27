@@ -2,9 +2,12 @@
 
 # Imports
 import datetime
+import io
 import urllib.parse
 
 # Packages
+import zipfile
+
 import dateutil.parser
 import lxml.etree
 import requests
@@ -124,19 +127,24 @@ def get_camera_info(camera_id):
         if info_element.tag not in INFO_TYPE_MAP:
             camera_info[info_element.tag] = info_element.text
         else:
+            # Check for None
+            if info_element.text == "None" or info_element.text is None:
+                camera_info[info_element.tag] = None
+                continue
+
             if INFO_TYPE_MAP[info_element.tag] == "int":
                 camera_info[info_element.tag] = int(info_element.text)
             elif INFO_TYPE_MAP[info_element.tag] == "float":
-                try:
-                    camera_info[info_element.tag] = float(info_element.text)
-                except ValueError as e:
-                    camera_info[info_element.tag] = None
+                camera_info[info_element.tag] = float(info_element.text)
             elif INFO_TYPE_MAP[info_element.tag] == "datetime":
                 camera_info[info_element.tag] = dateutil.parser.parse(info_element.text)
 
     # Tokenize tags
     if "tags" in camera_info:
-        camera_info["tags"] = [t.strip() for t in camera_info["tags"].split(",") if t.strip()]
+        if camera_info["tags"] is not None:
+            camera_info["tags"] = [t.strip() for t in camera_info["tags"].split(",") if t.strip()]
+        else:
+            camera_info["tags"] = None
 
     return camera_info
 
@@ -177,6 +185,45 @@ def get_timestamps_by_camera_month(camera_id, year, month):
         timestamp_list.append(image.text.replace(".jpg", ""))
 
     return timestamp_list
+
+
+def get_camera_zip(camera_id, year, month):
+    """
+    Download a camera ZIP archive.
+
+    :param camera_id: int, camera ID
+    :param year: int, year
+    :param month: int, month
+    :param file_path: str, optional, path to save file
+    :return: bool, status of download
+    """
+    # Setup strings for indexing
+    camera_id_string = "{0:08d}".format(camera_id)
+    camera_id_last2 = camera_id_string[-2:]
+    camera_id_last4 = camera_id_string[-4:]
+
+    # Setup file name
+    file_name = "{0:04d}.{1:02d}.zip".format(year, month)
+
+    # Build URL based on year
+    if year > 2012:
+        zip_url = urllib.parse.urljoin(BASE_URL, "{0}/{1}/{2}/{3}/{4}/{5}".format(POST_2012_URL, year,
+                                                                                  camera_id_last2,
+                                                                                  camera_id_last4,
+                                                                                  camera_id_string,
+                                                                                  file_name))
+    else:
+        # raise NotImplementedError("URL format for pre-2013 is not yet implemented.")
+        zip_url = urllib.parse.urljoin(BASE_URL, "{0}/{1}/{2}/{3}/{4}/{5}".format(PRE_2012_URL, year,
+                                                                                  camera_id_last2,
+                                                                                  camera_id_last4,
+                                                                                  camera_id_string,
+                                                                                  file_name))
+
+    # Download
+    zip_buffer = get_buffer(zip_url)
+    zip_handle = io.BytesIO(zip_buffer)
+    return zipfile.ZipFile(zip_handle)
 
 
 def save_camera_zip(camera_id, year, month, file_path=None):

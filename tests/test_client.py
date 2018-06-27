@@ -9,7 +9,7 @@ from nose.tools import assert_equal, assert_greater, assert_true, raises
 
 # Project imports
 from client import get_image_by_camera_timestamp, get_timestamps_by_camera_month, timestamp_to_datetime, \
-    get_camera_list, get_camera_info, save_camera_zip
+    get_camera_list, get_camera_info, save_camera_zip, get_camera_zip
 
 
 def test_timestamp_to_datetime():
@@ -90,6 +90,18 @@ def test_get_camera_info_bad():
     assert_equal(type(ci), dict)
 
 
+def test_get_camera_zip():
+    """
+    Test get_camera_zip basic case.
+    :return:
+    """
+    # Download and check path exists for pre-2012
+    import zipfile
+    zip_object = get_camera_zip(21804, 2002, 2)
+    assert_equal(type(zip_object), zipfile.ZipFile)
+    assert_equal(len(zip_object.namelist()), 13)
+
+
 def test_save_camera_zip():
     """
     Test save_camera_zip basic case.
@@ -106,7 +118,3 @@ def test_save_camera_zip():
     assert_true(status)
     assert_true(os.path.exists("2017.03.zip"))
     os.unlink("2017.03.zip")
-
-
-
-
