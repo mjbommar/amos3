@@ -36,7 +36,7 @@ def build_camera_database(num_cameras=None):
     return camera_data
 
 
-def build_image_database(camera_id_list, start_date=None, end_date=None, output_path="data"):
+def build_image_database(camera_id_list, start_date=None, end_date=None, output_path="data", skip_existing=True):
     """
     Build an image database given a list of camera IDs, start date, and end date.
     :param camera_id_list: list, list of camera ID integers
@@ -55,6 +55,10 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
         camera_output_path = os.path.join(output_path, str(camera_id))
         if not os.path.exists(camera_output_path):
             os.makedirs(camera_output_path)
+        else:
+            # Skip camera ID if already exists
+            if skip_existing:
+                continue
 
         # Save info as JSON
         with open(os.path.join(camera_output_path, "info.json"), "w") as json_output_file:
@@ -97,5 +101,4 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
 
 
 if __name__ == "__main__":
-    cd = build_camera_database(1)
-    build_image_database([c['id'] for c in cd])
+    build_image_database([30815])

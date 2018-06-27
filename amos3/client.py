@@ -141,7 +141,7 @@ def get_camera_info(camera_id):
 
     # Tokenize tags
     if "tags" in camera_info:
-        if len(camera_info["tags"]) is not None:
+        if camera_info["tags"] is not None:
             camera_info["tags"] = [t.strip() for t in camera_info["tags"].split(",") if t.strip()]
         else:
             camera_info["tags"] = None
