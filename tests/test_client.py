@@ -95,7 +95,18 @@ def test_save_camera_zip():
     Test save_camera_zip basic case.
     :return:
     """
-    # Download and check path exists
+    # Download and check path exists for pre-2012
     status = save_camera_zip(21804, 2002, 2)
     assert_true(status)
     assert_true(os.path.exists("2002.02.zip"))
+    os.unlink("2002.02.zip")
+
+    # Download and check path exists for post-2012
+    status = save_camera_zip(17345, 2017, 3)
+    assert_true(status)
+    assert_true(os.path.exists("2017.03.zip"))
+    os.unlink("2017.03.zip")
+
+
+
+
