@@ -1,0 +1,8 @@
+[FORMAT]
+max-line-length=120
+
+[MISCELLANEOUS]
+notes=FIXME,TODO
+
+[MESSAGES CONTROL]
+disable=r
