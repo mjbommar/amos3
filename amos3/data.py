@@ -42,7 +42,9 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
     :param camera_id_list: list, list of camera ID integers
     :param start_date:, datetime.datetime, start date to pull year/month
     :param end_date:, datetime.datetime, end date to pull year/month
-    :return: list of files
+    :param output_path:  str, path to store images/json
+    :param skip_existing:  bool, whether to skip existing camera IDs or update
+    :return: bool, status
     """
     # Check output path
     if not os.path.exists(output_path):
@@ -99,6 +101,4 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                 with get_camera_zip(camera_id, year, month) as camera_zip:
                     camera_zip.extractall(path=camera_output_path)
 
-
-if __name__ == "__main__":
-    build_image_database([30815])
+    return True
