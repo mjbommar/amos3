@@ -206,13 +206,3 @@ def save_camera_zip(camera_id, year, month, file_path=None):
 
     # Download
     save_buffer(zip_url, file_path)
-
-
-if __name__ == "__main__":
-    """
-    test7
-    download_camera_zip(20000, 2017, 2)
-    download_camera_zip(21804, 2002, 2)
-    """
-    save_camera_zip(21804, 2002, 2)
-    print(get_camera_info(21804))
