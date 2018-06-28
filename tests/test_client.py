@@ -8,7 +8,7 @@ import os
 from nose.tools import assert_equal, assert_greater, assert_true, raises
 
 # Project imports
-from client import get_image_by_camera_timestamp, get_timestamps_by_camera_month, timestamp_to_datetime, \
+from amos3.client import get_image_by_camera_timestamp, get_timestamps_by_camera_month, timestamp_to_datetime, \
     get_camera_list, get_camera_info, save_camera_zip, get_camera_zip
 
 

@@ -5,7 +5,7 @@ import os
 from nose.tools import assert_true, assert_equal, assert_in
 
 # Project imports
-from data import build_image_database, build_camera_database
+from amos3.data import build_image_database, build_camera_database
 
 
 def test_build_camera_database():

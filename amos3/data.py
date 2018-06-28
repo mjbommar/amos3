@@ -6,10 +6,12 @@ import json
 import os
 
 # Packages
+from zipfile import BadZipFile
+
 import numpy.random
 
 # Project imports
-from client import get_camera_list, get_camera_info, get_camera_zip
+from amos3.client import get_camera_list, get_camera_info, get_camera_zip, get_zip_url
 
 
 def build_camera_database(num_cameras=None):
@@ -98,7 +100,12 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                     continue
 
                 # retrieve archive and extract all
-                with get_camera_zip(camera_id, year, month) as camera_zip:
-                    camera_zip.extractall(path=camera_output_path)
+                try:
+                    with get_camera_zip(camera_id, year, month) as camera_zip:
+                        camera_zip.extractall(path=camera_output_path)
+                except BadZipFile as e:
+                    print("ZIP contents for cameraID={0}, year={1}, month={2} is malformed: {3}"
+                          .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
+                    continue
 
     return True

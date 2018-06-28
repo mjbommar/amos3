@@ -137,6 +137,8 @@ def get_camera_info(camera_id):
             elif INFO_TYPE_MAP[info_element.tag] == "float":
                 camera_info[info_element.tag] = float(info_element.text)
             elif INFO_TYPE_MAP[info_element.tag] == "datetime":
+                if info_element.text.endswith("midnight"):
+                    info_element.text = info_element.text.replace(", midnight", ", 00:00")
                 camera_info[info_element.tag] = dateutil.parser.parse(info_element.text)
 
     # Tokenize tags
@@ -187,24 +189,20 @@ def get_timestamps_by_camera_month(camera_id, year, month):
     return timestamp_list
 
 
-def get_camera_zip(camera_id, year, month):
+def get_zip_url(camera_id, year, month):
     """
-    Download a camera ZIP archive.
-
+    Get URL for a ZIP from a given camera/year/month.
     :param camera_id: int, camera ID
     :param year: int, year
     :param month: int, month
-    :param file_path: str, optional, path to save file
-    :return: bool, status of download
+    :return: str, URL to download
     """
     # Setup strings for indexing
     camera_id_string = "{0:08d}".format(camera_id)
     camera_id_last2 = camera_id_string[-2:]
     camera_id_last4 = camera_id_string[-4:]
-
     # Setup file name
     file_name = "{0:04d}.{1:02d}.zip".format(year, month)
-
     # Build URL based on year
     if year > 2012:
         zip_url = urllib.parse.urljoin(BASE_URL, "{0}/{1}/{2}/{3}/{4}/{5}".format(POST_2012_URL, year,
@@ -219,11 +217,30 @@ def get_camera_zip(camera_id, year, month):
                                                                                   camera_id_last4,
                                                                                   camera_id_string,
                                                                                   file_name))
+    return zip_url
+
+
+def get_camera_zip(camera_id, year, month):
+    """
+    Download a camera ZIP archive.
+
+    :param camera_id: int, camera ID
+    :param year: int, year
+    :param month: int, month
+    :param file_path: str, optional, path to save file
+    :return: bool, status of download
+    """
+    zip_url = get_zip_url(camera_id, year, month)
 
     # Download
     zip_buffer = get_buffer(zip_url)
     zip_handle = io.BytesIO(zip_buffer)
-    return zipfile.ZipFile(zip_handle)
+    try:
+        zip_object = zipfile.ZipFile(zip_handle)
+        return zip_object
+    except Exception as e:
+        print(zip_buffer)
+        raise e
 
 
 def save_camera_zip(camera_id, year, month, file_path=None):
@@ -236,31 +253,11 @@ def save_camera_zip(camera_id, year, month, file_path=None):
     :param file_path: str, optional, path to save file
     :return: bool, status of download
     """
-    # Setup strings for indexing
-    camera_id_string = "{0:08d}".format(camera_id)
-    camera_id_last2 = camera_id_string[-2:]
-    camera_id_last4 = camera_id_string[-4:]
-
     # Setup file name
     file_name = "{0:04d}.{1:02d}.zip".format(year, month)
     if file_path is None:
         file_path = "./{0}".format(file_name)
 
-    # Build URL based on year
-    if year > 2012:
-        zip_url = urllib.parse.urljoin(BASE_URL, "{0}/{1}/{2}/{3}/{4}/{5}".format(POST_2012_URL, year,
-                                                                                  camera_id_last2,
-                                                                                  camera_id_last4,
-                                                                                  camera_id_string,
-                                                                                  file_name))
-    else:
-        # raise NotImplementedError("URL format for pre-2013 is not yet implemented.")
-        zip_url = urllib.parse.urljoin(BASE_URL, "{0}/{1}/{2}/{3}/{4}/{5}".format(PRE_2012_URL, year,
-                                                                                  camera_id_last2,
-                                                                                  camera_id_last4,
-                                                                                  camera_id_string,
-                                                                                  file_name))
-
     # Download
-    save_buffer(zip_url, file_path)
+    save_buffer(get_zip_url(camera_id, year, month), file_path)
     return True
