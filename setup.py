@@ -4,7 +4,7 @@ setup(
     name='amos3',
     version='0.1.0',
     packages=find_packages(exclude=['*tests*']),
-    package_dir={'': 'amos3'},
+    package_dir={'': '.'},
     install_requires=[
         'coveralls==1.3.0',
         'lxml',
