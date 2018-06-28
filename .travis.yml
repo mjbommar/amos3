@@ -8,6 +8,6 @@ install:
 - pip install -r python-requirements.txt
 - pip install -e .
 script:
-- PYTHONPATH=amos3 py.test --cov amos3 --pylint --pylint-rcfile=.pylintrc tests
+- PYTHONPATH=. py.test --cov amos3 --pylint --pylint-rcfile=.pylintrc tests
 after_success:
 - coveralls
