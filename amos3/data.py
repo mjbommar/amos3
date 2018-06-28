@@ -103,6 +103,10 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                 try:
                     # open
                     camera_zip = get_camera_zip(camera_id, year, month)
+                    if camera_zip is None:
+                        print("ZIP not available or error received for cameraID={0}, year={1}, month={2}: {3}"
+                              .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
+                        continue
                     # iterate through members to avoid reading entire file at once
                     for zip_member_name in camera_zip.namelist():
                         camera_zip.extract(member=zip_member_name, path=camera_output_path)

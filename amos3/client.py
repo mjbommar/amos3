@@ -55,7 +55,10 @@ def get_buffer(url):
     """
     # Get response
     response = requests.get(url)
-    return response.content
+    if response.status_code == 404:
+        return None
+    else:
+        return response.content
 
 
 def save_buffer(url, file_path):
@@ -235,6 +238,8 @@ def get_camera_zip(camera_id, year, month):
     # Download
     try:
         zip_buffer = get_buffer(zip_url)
+        if zip_buffer is None:
+            return None
         zip_object = zipfile.ZipFile(io.BytesIO(zip_buffer))
         del zip_buffer
         return zip_object
