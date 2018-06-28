@@ -55,7 +55,10 @@ def get_buffer(url):
     """
     # Get response
     response = requests.get(url)
-    return response.content
+    if response.status_code == 404:
+        return None
+    else:
+        return response.content
 
 
 def save_buffer(url, file_path):
@@ -161,6 +164,8 @@ def get_image_by_camera_timestamp(camera_id, timestamp_string):
     # Create image URL and retrieve
     image_url = urllib.parse.urljoin(BASE_URL, "image/{0}/{1}.jpg".format(camera_id, timestamp_string))
     image_buffer = get_buffer(image_url)
+    if image_buffer is None:
+        raise ValueError("Invalid camera ID or timestamp string provided or image otherwise unavailable.")
     if b"<!DOCTYPE html>" in image_buffer:
         raise ValueError("Invalid camera ID or timestamp string provided or image otherwise unavailable.")
     else:
@@ -233,13 +238,14 @@ def get_camera_zip(camera_id, year, month):
     zip_url = get_zip_url(camera_id, year, month)
 
     # Download
-    zip_buffer = get_buffer(zip_url)
-    zip_handle = io.BytesIO(zip_buffer)
     try:
-        zip_object = zipfile.ZipFile(zip_handle)
+        zip_buffer = get_buffer(zip_url)
+        if zip_buffer is None:
+            return None
+        zip_object = zipfile.ZipFile(io.BytesIO(zip_buffer))
+        del zip_buffer
         return zip_object
     except Exception as e:
-        print(zip_buffer)
         raise e
 
 
