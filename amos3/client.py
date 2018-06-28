@@ -233,10 +233,10 @@ def get_camera_zip(camera_id, year, month):
     zip_url = get_zip_url(camera_id, year, month)
 
     # Download
-    zip_buffer = get_buffer(zip_url)
-    zip_handle = io.BytesIO(zip_buffer)
     try:
-        zip_object = zipfile.ZipFile(zip_handle)
+        zip_buffer = get_buffer(zip_url)
+        zip_object = zipfile.ZipFile(io.BytesIO(zip_buffer))
+        del zip_buffer
         return zip_object
     except Exception as e:
         print(zip_buffer)

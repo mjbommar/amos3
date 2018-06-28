@@ -11,7 +11,7 @@ from zipfile import BadZipFile
 import numpy.random
 
 # Project imports
-from amos3.client import get_camera_list, get_camera_info, get_camera_zip, get_zip_url
+from amos3.client import get_camera_list, get_camera_info, get_camera_zip, get_zip_url, save_camera_zip
 
 
 def build_camera_database(num_cameras=None):
@@ -101,10 +101,15 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
 
                 # retrieve archive and extract all
                 try:
-                    with get_camera_zip(camera_id, year, month) as camera_zip:
-                        # iterate through members to avoid reading entire file at once
-                        for zip_member_name in camera_zip.namelist():
-                            camera_zip.extract(member=zip_member_name, path=camera_output_path)
+                    # open
+                    camera_zip = get_camera_zip(camera_id, year, month)
+                    # iterate through members to avoid reading entire file at once
+                    for zip_member_name in camera_zip.namelist():
+                        camera_zip.extract(member=zip_member_name, path=camera_output_path)
+
+                    # cleanup
+                    camera_zip.close()
+                    del camera_zip
                 except BadZipFile as e:
                     print("ZIP contents for cameraID={0}, year={1}, month={2} is malformed: {3}"
                           .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
@@ -112,6 +117,11 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                 except MemoryError as f:
                     print("Insufficient memory to extract ZIP for cameraID={0}, year={1}, month={2}: {3}"
                           .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
-                    continue
+                    print("Attempting filesystem extract using `zip`...")
+                    tmp_zip_path = "/tmp/{0}.{1}.{2}.zip".format(camera_id, year, month)
+                    output_path = ""
+                    save_camera_zip(camera_id, year, month,
+                                    output_path=tmp_zip_path)
+                    os.system("unzip {0} -d {1}".format(tmp_zip_path, camera_output_path))
 
     return True
