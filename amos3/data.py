@@ -119,9 +119,8 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                           .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
                     print("Attempting filesystem extract using `zip`...")
                     tmp_zip_path = "/tmp/{0}.{1}.{2}.zip".format(camera_id, year, month)
-                    output_path = ""
-                    save_camera_zip(camera_id, year, month,
-                                    file_path=tmp_zip_path)
+                    zip_url = get_zip_url(camera_id, year, month)
+                    os.system("wget -O {0} {1}".format(tmp_zip_path, zip_url))
                     os.system("unzip {0} -d {1}".format(tmp_zip_path, camera_output_path))
 
     return True
