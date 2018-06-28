@@ -75,6 +75,8 @@ def save_buffer(url, file_path):
         output_file.write(buffer)
         return True
 
+    return False
+
 
 def get_camera_list():
     """
@@ -170,6 +172,19 @@ def get_image_by_camera_timestamp(camera_id, timestamp_string):
         raise ValueError("Invalid camera ID or timestamp string provided or image otherwise unavailable.")
     else:
         return image_buffer
+
+
+def save_image_by_camera_timestamp(camera_id, timestamp_string, file_path):
+    """
+    Save an image by camera ID and timestamp string to a given file.
+    :param camera_id: int, camera ID, e.g., 65
+    :param timestamp_string: str, timestamp string, e.g., 20160101_163316
+    :param file_path: str, output file path
+    :return: bool, status
+    """
+    # Create image URL and retrieve
+    image_url = urllib.parse.urljoin(BASE_URL, "image/{0}/{1}.jpg".format(camera_id, timestamp_string))
+    return save_buffer(image_url, file_path)
 
 
 def get_timestamps_by_camera_month(camera_id, year, month):
