@@ -9,7 +9,7 @@ from nose.tools import assert_equal, assert_greater, assert_true, raises
 
 # Project imports
 from amos3.client import get_image_by_camera_timestamp, get_timestamps_by_camera_month, timestamp_to_datetime, \
-    get_camera_list, get_camera_info, save_camera_zip, get_camera_zip
+    get_camera_list, get_camera_info, save_camera_zip, get_camera_zip, save_image_by_camera_timestamp
 
 
 def test_timestamp_to_datetime():
@@ -30,6 +30,17 @@ def test_get_image_by_camera_timestamp():
     image_buffer = get_image_by_camera_timestamp(65, "20160101_000356")
     assert_equal(type(image_buffer), bytes)
     assert_equal(len(image_buffer), 137897)
+
+
+def test_save_image_by_camera_timestamp():
+    """
+    Test get_image_by_camera_timestamp basic case.
+    :return:
+    """
+    # Test single image size and type
+    status = save_image_by_camera_timestamp(65, "20160101_000356", "test.jpg")
+    assert_true(status)
+    assert_true(os.path.exists("test.jpg"))
 
 
 @raises(ValueError)
