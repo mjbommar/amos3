@@ -239,7 +239,6 @@ def get_camera_zip(camera_id, year, month):
         del zip_buffer
         return zip_object
     except Exception as e:
-        print(zip_buffer)
         raise e
 
 
