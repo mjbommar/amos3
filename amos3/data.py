@@ -121,7 +121,7 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
                     tmp_zip_path = "/tmp/{0}.{1}.{2}.zip".format(camera_id, year, month)
                     output_path = ""
                     save_camera_zip(camera_id, year, month,
-                                    output_path=tmp_zip_path)
+                                    file_path=tmp_zip_path)
                     os.system("unzip {0} -d {1}".format(tmp_zip_path, camera_output_path))
 
     return True
