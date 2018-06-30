@@ -12,5 +12,5 @@ See https://github.com/mjbommar/amos3 for more information about amos3.
 __author__ = "Michael Bommarito"
 __copyright__ = "Copyright 2018, Michael Bommarito"
 __license__ = "https://github.com/mjbommar/amos3/blob/master/LICENSE"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __maintainer__ = "mjbommar"
