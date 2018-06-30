@@ -27,3 +27,12 @@ def test_build_image_database():
     """
     build_image_database([30815])
     assert_true(os.path.exists("data/30815/20150330_163044.jpg"))
+
+
+def test_build_image_database_parallel():
+    """
+    Test build_image_database.
+    :return:
+    """
+    build_image_database([30815, 30816, 30817], workers=2)
+    assert_true(os.path.exists("data/30815/20150330_163044.jpg"))
