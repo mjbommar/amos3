@@ -7,6 +7,7 @@ amos3 is a Python 3 client for the Archive of Many Outdoor Scenes (AMOS) that in
 * methods to retrieve lists of images by camera
 * methods to retrieve raw images by camera/timestamp
 * methods to retrieve monthly ZIP archives of images by camera
+* methods to construct datasets of one or more cameras with corresponding metadata and save locally or on AWS S3
 * comprehensive unit tests with near-complete coverage
 
 
@@ -21,7 +22,7 @@ AMOS contains over 1 billion images from nearly 30K cameras over more than 15 ye
 **This repository and its author are not affiliated with AMOS or WashU.**
 
 ## amos3 Roadmap
-This initial release supports core functionality required to create simple datasets from AMOS on modern Python distributions.  Subsequent releases will include more functionality to automate the creation of datasets.  Integration with PIL/Pillow is also being considered to simplify the generation of standardized inputs for machine learning/computer vision applications.
+This initial release supports core functionality required to create simple datasets from AMOS on modern Python distributions.  Integration with PIL/Pillow is also being considered to simplify the generation of standardized inputs for machine learning/computer vision applications.
 
 
 ## Information
@@ -35,4 +36,5 @@ amos3 is distributed under the standard OSI MIT License (Expat) as documented in
 ## Releases
 | Release | Date | Description |
 | --- | --- | --- |
+| [0.1.1](https://github.com/mjbommar/amos3/tree/0.1.1) | 2018-06-30 | second public release |
 | [0.1.0](https://github.com/mjbommar/amos3/tree/0.1.0) | 2018-06-27 | initial public release |
