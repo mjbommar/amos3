@@ -7,6 +7,7 @@ setup(
     package_dir={'': '.'},
     install_requires=[
         'coveralls==1.3.0',
+        'boto3',
         'lxml',
         'nose',
         'numpy',
