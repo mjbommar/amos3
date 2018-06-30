@@ -96,8 +96,13 @@ def build_camera_image_database(camera_id, start_date=None, end_date=None, outpu
 
             # retrieve archive and extract all
             try:
-                with get_camera_zip(camera_id, year, month) as camera_zip:
+                camera_zip = get_camera_zip(camera_id, year, month)
+                if camera_zip is not None:
                     camera_zip.extractall(path=camera_output_path)
+                else:
+                    print("ZIP contents for cameraID={0}, year={1}, month={2} is malformed: {3}"
+                          .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
+                    continue
             except BadZipFile as e:
                 print("ZIP contents for cameraID={0}, year={1}, month={2} is malformed: {3}"
                       .format(camera_id, year, month, get_zip_url(camera_id, year, month)))
