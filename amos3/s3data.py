@@ -12,7 +12,6 @@ from zipfile import BadZipFile
 # Packages
 import botocore
 import boto3
-import numpy.random
 
 # Project imports
 from amos3.client import get_camera_list, get_camera_info, get_camera_zip, get_zip_url
@@ -22,6 +21,25 @@ from amos3.data import get_camera_info
 S3_BUCKET = os.getenv("AMOS_S3_BUCKET", "amos-data")
 S3_ACCESS_KEY = os.getenv("AMOS_S3_ACCESS_KEY", "")
 S3_SECRET_KEY = os.getenv("AMOS_S3_SECRET_KEY", "")
+
+
+def s3_get_camera_list(client):
+    """
+    Get list of S3 cameras.
+    :param client: S3 client
+    """
+    # Create paginator
+    paginator = client.get_paginator('list_objects_v2')
+    path = "cameras/"
+
+    # Paginate through results
+    camera_id_list = []
+    for result in paginator.paginate(Bucket=S3_BUCKET, Delimiter='/', Prefix=path):
+        for o in result.get("CommonPrefixes"):
+            prefix = o["Prefix"]
+            camera_id_list.append(prefix.split("/")[1])
+
+    return camera_id_list
 
 
 def s3_path_exists(path, client):
@@ -135,16 +153,24 @@ def build_image_database(camera_id_list, start_date=None, end_date=None, output_
     :param workers: int, number of worker processes to spawn
     :return: bool, status
     """
-    # Check output path
+
+    # Build existing camera list
+    if skip_existing:
+        s3_client = boto3.client('s3', aws_access_key_id=S3_ACCESS_KEY, aws_secret_access_key=S3_SECRET_KEY)
+        existing_camera_id_list = s3_get_camera_list(s3_client)
+        process_camera_id_list = [camera_id for camera_id in camera_id_list if camera_id not in existing_camera_id_list]
+    else:
+        process_camera_id_list = camera_id_list
 
     # Iterate through camera ID list
     if workers == 1:
-        for camera_id in camera_id_list:
+        for camera_id in process_camera_id_list:
             build_camera_image_database(camera_id, start_date, end_date, output_path, skip_existing)
     elif workers > 1:
-        pool_arguments = [(camera_id, start_date, end_date, output_path, skip_existing) for camera_id in camera_id_list]
+        pool_arguments = [(camera_id, start_date, end_date, output_path, skip_existing) for camera_id in
+                          process_camera_id_list]
         with multiprocessing.Pool(workers) as pool:
-            results = pool.starmap(build_camera_image_database, pool_arguments)
+            _ = pool.starmap(build_camera_image_database, pool_arguments)
     else:
         raise ValueError("workers must be >= 1")
 
